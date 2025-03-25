@@ -8,7 +8,7 @@ const authRouter = express.Router();
  * params {email, password}
  */
 authRouter.post("/", async (req, res) => {
-  const dbUser = await User.findOne({ email: req.params.email });
+  const dbUser = await User.findOne({ email: req.body.email });
 
   if (!dbUser) {
     return res.status(404).send("user not found");
