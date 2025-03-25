@@ -9,6 +9,8 @@ import mongoose from "mongoose";
 import { healthRouter } from "./routes/health.js";
 import userRouter from "./routes/user.js";
 import rideRouter from "./routes/ride.js";
+import adminRouter from "./routes/admin.js";
+
 
 dotenv.config();
 // console.log(process.env.MONGODB_URI);
@@ -45,6 +47,7 @@ app.get("/", (req, res) => {
 app.use("/api/health", healthRouter);
 app.use("/api/user", userRouter);
 app.use("/api/rides", rideRouter);
+app.use("/api/admin", adminRouter);
 
 // Global error handling
 app.use((err, req, res, next) => {
