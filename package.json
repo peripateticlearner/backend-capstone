@@ -1,5 +1,5 @@
 {
-  "name": "backend-template",
+  "name": "backend-capstone",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,7 @@
     "start": "node index.js"
   },
   "keywords": [],
-  "author": "Abe Tavarez",
+  "author": "Ali Kirat",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
