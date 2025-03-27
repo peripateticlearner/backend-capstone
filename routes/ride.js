@@ -75,4 +75,17 @@ router.patch("/:id", async (req, res) => {
     }
 });
 
+/**
+ * DELETE /api/rides/:id - Delete a ride by ID
+ */
+router.delete("/:id", async (req, res) => {
+    try {
+      await Ride.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // No content
+    } catch (err) {
+      res.status(500).json({ message: "Failed to delete ride", error: err.message });
+    }
+  });
+  
+
 export default router;
