@@ -3,21 +3,34 @@ import User from "../models/User.js";
 
 const userRouter = express.Router();
 
-
 /**
  * POST create a new user
  */
 userRouter.post("/", async (req, res) => {
-  try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(201).json(user);
-  } catch (e) {
-    console.error(e);
-    res.status(400).json({ message: e.message });
-  }
-});
+    try {
+        const { username, email, password } = req.body;
 
+        // Validation - Ensure required fields are present
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        //  Add more robust email validation if needed
+
+        // Check for existing user with the same username or email
+        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+        if (existingUser) {
+            return res.status(409).json({ message: "Username or email already exists" });
+        }
+
+        const user = new User(req.body);
+        await user.save();
+        res.status(201).json(user);
+    } catch (e) {
+        console.error(e);
+        res.status(400).json({ message: e.message });
+    }
+});
 
 /**
  * GET get all users
