@@ -45,6 +45,8 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(cors({
   origin: ["https://atlastaxi.netlify.app"],
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type"],
   credentials: true
 }));
 
