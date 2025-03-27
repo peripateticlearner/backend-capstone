@@ -2,7 +2,7 @@
 
 This is the **Express + MongoDB backend** for the Atlas Taxi App. It handles user registration, login, ride booking, and admin status updates.
 
-## ⚙️ Features
+## Features
 
 - User authentication (simplified)
 - REST API for rides, users, and admin
@@ -10,16 +10,16 @@ This is the **Express + MongoDB backend** for the Atlas Taxi App. It handles use
 - MongoDB with Mongoose models
 - CORS and JSON middleware setup
 
-## 🔧 Tech Stack
+## Tech Stack
 
 - Node.js
 - Express
 - MongoDB + Mongoose
 - dotenv
 - CORS
-- nodemon (dev only)
+- nodemon
 
-## 📦 Getting Started
+## Getting Started
 
 ```bash
 cd backend
