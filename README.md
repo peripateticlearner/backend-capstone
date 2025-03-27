@@ -1,9 +1,27 @@
-# Backend API Template
+# Atlas Taxi App — Backend
 
+This is the **Express + MongoDB backend** for the Atlas Taxi App. It handles user registration, login, ride booking, and admin status updates.
 
-## Instructions
+## ⚙️ Features
 
-1. Clone the repo `git clone <repo-url> <new-project-name>`
-2. cd into your new project folder and run `npm i`
-3. Create a new `.env` file and add the `MONGODB_URI`
-4. Run the app with: `npm run dev`
+- User authentication (simplified)
+- REST API for rides, users, and admin
+- Ride status updates (Scheduled → In Progress → Completed)
+- MongoDB with Mongoose models
+- CORS and JSON middleware setup
+
+## 🔧 Tech Stack
+
+- Node.js
+- Express
+- MongoDB + Mongoose
+- dotenv
+- CORS
+- nodemon (dev only)
+
+## 📦 Getting Started
+
+```bash
+cd backend
+npm install
+npm run dev
