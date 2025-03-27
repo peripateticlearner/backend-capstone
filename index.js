@@ -17,10 +17,17 @@ dotenv.config();
 
 // Connect to MongoDB
 // https://mongoosejs.com/docs/guide.html#indexes
-await mongoose
-  .connect(process.env.MONGODB_URI, { autoIndex: false })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((e) => console.error(e));
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, { autoIndex: false });
+    console.log("Connected to MongoDB");
+  } catch (e) {
+    console.error("Error connecting to MongoDB:", e);
+    process.exit(1); // Exit process on failure
+  }
+};
+
+connectDB();
 
 const PORT = process.env.PORT || 4000;
 

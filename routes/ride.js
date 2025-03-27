@@ -10,6 +10,11 @@ router.post("/", async (req, res) => {
     try {
         const { pickupLocation, dropoffLocation, scheduledTime, contactInfo } = req.body;
 
+        // Validation - Important even without auth for now
+        if (!pickupLocation || !dropoffLocation || !scheduledTime || !contactInfo) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
         const ride = new Ride({
             pickupLocation,
             dropoffLocation,
@@ -21,6 +26,7 @@ router.post("/", async (req, res) => {
         await ride.save();
         res.status(201).json(ride);
     } catch (err) {
+        console.error(err); // Log the error for debugging
         res.status(500).json({ message: "Error booking ride", error: err.message });
     }
 });
