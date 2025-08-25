@@ -44,7 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(cors({
-  origin: ["https://atlastaxi.netlify.app"],
+  origin: ["http://localhost:5173", "https://atlastaxi.netlify.app"], // Allow both local and production origins
   methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type"],
   credentials: true
