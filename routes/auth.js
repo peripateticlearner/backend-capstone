@@ -3,20 +3,24 @@ import User from "../models/User.js";
 
 const authRouter = express.Router();
 
-/**
- * POST / sign in user
- * params {email, password}
- */
 authRouter.post("/", async (req, res) => {
-  const dbUser = await User.findOne({ email: req.body.email });
+  try {
+    const dbUser = await User.findOne({ email: req.body.email });
 
-  if (!dbUser) {
-    return res.status(404).send("user not found");
+    if (!dbUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (dbUser.password !== req.body.password) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    res.status(200).json({
+      _id: dbUser._id,
+      message: "Login successful",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Something went wrong. Please try again." });
   }
-
-  if (dbUser.password !== req.body.password) {
-    return res.status(401).send("invalid password");
-  }
-
-  res.json(dbUser);
 });
