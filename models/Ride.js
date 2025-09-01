@@ -25,9 +25,21 @@ const rideSchema = new mongoose.Schema({
   rider: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: false // Temporary until I add authentication
+    required: true
+  },
+  driver: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
+  fare: {
+    type: Number,
+    required: false
   },
   createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }
