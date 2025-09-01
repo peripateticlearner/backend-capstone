@@ -1,5 +1,7 @@
 import express from "express";
 import Admin from "../models/Admin.js";
+import User from "../models/User.js"; // Import User model
+import Ride from "../models/Ride.js"; // Import Ride model
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import authenticateJWT from "../middleware/authenticateJWT.js";
@@ -81,6 +83,29 @@ router.get("/data", authenticateJWT, async (req, res) => {
         res.status(200).json({ message: "Admin data fetched succesfully", admins });
     } catch (err) {
         res.status(500).json({ message: "Error fetching admin data", error: err.message });
+    }
+});
+
+/**
+ * GET /api/admin/dashboard - Admin dashboard (secured)
+ * Requires authentication
+ */
+router.get("/dashboard", authenticateJWT, async (req,res) => {
+    try {
+        console.log("Dashboard route accessed");
+        const dashboardData = {
+            totalUsers: await User.countDocuments(),
+            totalRides: await Ride.countDocuments(),
+            totalAdmins: await Admin.countDocuments(),
+        };
+
+        res.status(200).json({
+            message: "Welcome to admin dashboard!",
+            dashboardData,
+        });
+    } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+        res.status(500).json({ message: "Error accessing admin dashboard", error: err.message })
     }
 });
 
