@@ -1,7 +1,7 @@
 import express from "express";
 import Admin from "../models/Admin.js";
-import User from "../models/User.js"; // Import User model
-import Ride from "../models/Ride.js"; // Import Ride model
+import User from "../models/User.js";
+import Ride from "../models/Ride.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import authenticateJWT from "../middleware/authenticateJWT.js";
