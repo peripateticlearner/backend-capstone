@@ -7,19 +7,19 @@ import mongoose from "mongoose";
 
 // Routers
 import { healthRouter } from "./routes/health.js";
+import authRouter from "./routes/auth.js";
 import userRouter from "./routes/user.js";
 import rideRouter from "./routes/ride.js";
 import adminRouter from "./routes/admin.js";
 
 
 dotenv.config();
-// console.log(process.env.MONGODB_URI);
 
 // Connect to MongoDB
-// https://mongoosejs.com/docs/guide.html#indexes
+
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, { autoIndex: false });
+    await mongoose.connect(process.env.MONGODB_URI, { autoIndex: "false" });
     console.log("Connected to MongoDB");
   } catch (e) {
     console.error("Error connecting to MongoDB:", e);
@@ -57,6 +57,7 @@ app.get("/", (req, res) => {
 
 // API Routes
 app.use("/api/health", healthRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/rides", rideRouter);
 app.use("/api/admin", adminRouter);
