@@ -4,56 +4,30 @@ import User from "../models/User.js";
 const userRouter = express.Router();
 
 /**
- * POST create a new user
+ * GET /api/user - Get all users
  */
-userRouter.post("/", async (req, res) => {
+userRouter.get('/', async (req, res) => {
     try {
-        const { username, email, password } = req.body;
-
-        // Validation - Ensure required fields are present
-        if (!username || !email || !password) {
-            return res.status(400).json({ message: "All fields are required" });
-        }
-
-        //  Add more robust email validation if needed
-
-        // Check for existing user with the same username or email
-        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-        if (existingUser) {
-            return res.status(409).json({ message: "Username or email already exists" });
-        }
-
-        const user = new User(req.body);
-        await user.save();
-        res.status(201).json(user);
-    } catch (e) {
-        console.error(e);
-        res.status(400).json({ message: e.message });
+        const users = await User.find().select("-password");
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching users", error: error.message });
     }
 });
 
 /**
- * GET get all users
+ * GET /api/user/:id - Get user by ID
  */
-userRouter.get('/', async(req, res) => {
+userRouter.get('/:id', async (req, res) => {
     try {
-        const users = await User.find();
-        res.json(users);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching users", error: error.message });
-    }
-})
-
-/**
- * GET user by the id
- */
-userRouter.get('/:id', async(req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.id).select("-password");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
         res.json(user);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching users", error: error.message });
+        res.status(500).json({ message: "Error fetching user", error: error.message });
     }
-})
+});
 
 export default userRouter;
