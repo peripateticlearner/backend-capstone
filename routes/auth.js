@@ -15,7 +15,6 @@ authRouter.post("/user-register", async (req, res) => {
     if (!firstName || !lastName || !email || !password)
       return res.status(400).json({ message: "All fields are required." });
 
-    // Basic email and password validation
     if (!email.includes("@"))
       return res.status(400).json({ message: "Invalid email format." });
     if (password.length < 8)
@@ -70,7 +69,6 @@ authRouter.post("/admin-register", async (req, res) => {
     if (!username || !email || !password)
       return res.status(400).json({ message: "All fields are required." });
 
-    // Basic email and password validation
     if (!email.includes("@"))
       return res.status(400).json({ message: "Invalid email format." });
     if (password.length < 8)
