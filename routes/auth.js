@@ -5,45 +5,36 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 const authRouter = express.Router();
+
 /**
- * POST /api/auth/admin-login - Admin login
+ * POST /api/auth/user-register - Register a new User
  */
-authRouter.post("/admin-login", async (req, res) => {
+authRouter.post("/user-register", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
+    if (!firstName || !lastName || !email || !password)
+      return res.status(400).json({ message: "All fields are required." });
 
-    // Validate email and password format
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required." });
-    }
+    // Basic email and password validation
+    if (!email.includes("@"))
+      return res.status(400).json({ message: "Invalid email format." });
+    if (password.length < 8)
+      return res.status(400).json({ message: "Password must be at least 8 characters." });
 
-    // Check if admin exists
-    const dbAdmin = await Admin.findOne({ email });
-    if(!dbAdmin) {
-      return res.status(404).json({ message: "Admin not found" });
-    }
+    const existingUser = await User.findOne({ email });
+    if (existingUser)
+      return res.status(409).json({ message: "Email already exists." });
 
-    // Validate password
-    const isPasswordValid = await bcrypt.compare(password, dbAdmin.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid password" });
-    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ firstName, lastName, email, password: hashedPassword });
+    await newUser.save();
 
-    // Generate JWT for admin
-    const token = jwt.sign(
-      { adminId: dbAdmin._id},
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-    
-    res.status(200).json({
-      _id: dbAdmin._id,
-      token,
-      message: "Admin Login successful",
-    });
+    // Remove password from response
+    const { password: pw, ...userWithoutPassword } = newUser.toObject();
+    res.status(201).json({ message: "User registered successfully", user: userWithoutPassword });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Something went wrong. Please try again."});
+    res.status(500).json({ message: "Error registering user", error: err.message });
   }
 });
 
@@ -53,35 +44,17 @@ authRouter.post("/admin-login", async (req, res) => {
 authRouter.post("/user-login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Validate email and password format
-    if (!email || !password) {
+    if (!email || !password)
       return res.status(400).json({ message: "Email and password are required." });
-    }
 
     const dbUser = await User.findOne({ email });
+    const isPasswordValid = dbUser && await bcrypt.compare(password, dbUser.password);
 
-    if (!dbUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!dbUser || !isPasswordValid)
+      return res.status(401).json({ message: "Invalid credentials" });
 
-    const isPasswordValid = await bcrypt.compare(password, dbUser.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid password" });
-    }
-
-    // Generate JWT for user
-    const token = jwt.sign(
-      { userId: dbUser._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    res.status(200).json({
-      _id: dbUser._id,
-      token,
-      message: "User Login successful",
-    });
+    const token = jwt.sign({ userId: dbUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    res.status(200).json({ _id: dbUser._id, token, message: "User Login successful" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Something went wrong. Please try again." });
@@ -89,40 +62,57 @@ authRouter.post("/user-login", async (req, res) => {
 });
 
 /**
- * POST /api/auth/user-register - Register a new User
+ * POST /api/auth/admin-register - Register a new Admin
  */
-authRouter.post("/user-register", async (req, res) => {
+authRouter.post("/admin-register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
-
-    // Validate required fields
-    if (!username || !email || !password) {
+    if (!username || !email || !password)
       return res.status(400).json({ message: "All fields are required." });
-    }
 
-    // Check for existing user with the same username or email
-    const existingUser = await User.findOne ({ $or: [{ username }, { email }] });
-    if (existingUser) {
+    // Basic email and password validation
+    if (!email.includes("@"))
+      return res.status(400).json({ message: "Invalid email format." });
+    if (password.length < 8)
+      return res.status(400).json({ message: "Password must be at least 8 characters." });
+
+    const existingAdmin = await Admin.findOne({ $or: [{ username }, { email }] });
+    if (existingAdmin)
       return res.status(409).json({ message: "Username or email already exists." });
-    }
 
-    // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
+    const newAdmin = new Admin({ username, email, password: hashedPassword });
+    await newAdmin.save();
 
-    const newUser = new User({
-      username,
-      email,
-      password: hashedPassword,
-    });
-    await newUser.save();
-
-    // Send a response back to the client
-    res.status(201).json ({ message: "User registered successfully", newUser });
+    // Remove password from response
+    const { password: pw, ...adminWithoutPassword } = newAdmin.toObject();
+    res.status(201).json({ message: "Admin registered successfully", admin: adminWithoutPassword });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error registering user", error: err.message });
+    res.status(500).json({ message: "Error registering admin", error: err.message });
   }
 });
 
+/**
+ * POST /api/auth/admin-login - Admin login
+ */
+authRouter.post("/admin-login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password)
+      return res.status(400).json({ message: "Email and password are required." });
+
+    const dbAdmin = await Admin.findOne({ email });
+    const isPasswordValid = dbAdmin && await bcrypt.compare(password, dbAdmin.password);
+
+    if (!dbAdmin || !isPasswordValid)
+      return res.status(401).json({ message: "Invalid credentials" });
+
+    const token = jwt.sign({ adminId: dbAdmin._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    res.status(200).json({ _id: dbAdmin._id, token, message: "Admin Login successful" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Something went wrong. Please try again." });
+  }
+});
 
 export default authRouter;
