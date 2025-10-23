@@ -46,7 +46,7 @@ app.use(helmet());
 app.use(cors({
   origin: ["http://localhost:5173", "https://atlastaxi.netlify.app"], // Allow both local and production origins
   methods: ["GET", "POST", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
