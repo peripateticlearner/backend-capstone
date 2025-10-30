@@ -183,9 +183,37 @@ backend-capstone/
 
 ## Deployment
 
-**Platform:** Render  
-**Database:** MongoDB Atlas  
-**Environment:** Production variables set in Render dashboard
+**Platform:** Render Free Tier  
+**Database:** MongoDB Atlas Free Tier (M0)  
+**Monitoring:** UptimeRobot (health check every 14 minutes)
+
+### Free Tier Considerations
+
+**Cold Starts:**
+- Render free tier spins down after 15 minutes of inactivity
+- First request after sleep takes 30-60 seconds to wake up
+- UptimeRobot pings `/api/health` every 14 minutes to minimize cold starts
+- Frontend displays user-friendly message during wake-up period
+
+**Production Recommendations:**
+- **Hosting:** Render Starter ($7/month) or Railway - eliminates cold starts
+- **Database:** MongoDB Atlas M10 ($57/month) - automatic backups, better performance
+- **Monitoring:** Upgrade to paid monitoring for SLA guarantees
+- **Total Cost:** ~$70/month for professional-grade deployment
+
+### Environment Variables (Set in Render Dashboard)
+```env
+MONGODB_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_secret_key_minimum_32_characters
+PORT=4000
+```
+
+### Health Check Endpoint
+```
+GET /api/health
+```
+
+Returns `{"status": "ok"}` when server is running. Used by UptimeRobot for monitoring.
 
 ## Related Repository
 
